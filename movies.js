@@ -100,7 +100,7 @@ const MOVIE_DATABASE = {
             title: "Better Watch Out",
             year: 2016,
             poster: "https://image.tmdb.org/t/p/w500/2mODXHdwb8pjScAq2NpBPLWY1Ya.jpg",
-            tmdbId: 425336
+            tmdbId: 406994
         },
         {
             title: "Krampus",
