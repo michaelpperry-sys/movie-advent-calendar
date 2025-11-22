@@ -257,13 +257,11 @@ function showMovieModal(movie, dayIndex) {
     // Handle Christmas double feature
     if (Array.isArray(movie)) {
         title.textContent = `${movie[0].title} & ${movie[1].title}`;
-        poster.src = movie[0].poster;
-        poster.alt = `${movie[0].title} & ${movie[1].title} Poster`;
+        setPosterWithFallback(poster, movie[0], `${movie[0].title} & ${movie[1].title}`);
         day.textContent = `Christmas Day Double Feature! 🎄`;
     } else {
         title.textContent = movie.title;
-        poster.src = movie.poster;
-        poster.alt = `${movie.title} Poster`;
+        setPosterWithFallback(poster, movie, movie.title);
 
         const boxDate = new Date(START_DATE);
         boxDate.setDate(boxDate.getDate() + dayIndex);
@@ -271,6 +269,23 @@ function showMovieModal(movie, dayIndex) {
     }
 
     modal.style.display = 'block';
+}
+
+// Set poster image with fallback to placeholder
+function setPosterWithFallback(imgElement, movie, altText) {
+    imgElement.alt = `${altText} Poster`;
+
+    // Try TMDB image first
+    imgElement.src = movie.poster;
+
+    // If TMDB fails, use placeholder with movie title and year
+    imgElement.onerror = function() {
+        const encodedTitle = encodeURIComponent(movie.title);
+        const encodedYear = encodeURIComponent(movie.year);
+        // Use a placeholder service that creates a nice image with text
+        imgElement.src = `https://placehold.co/500x750/0F5132/D4AF37?text=${encodedTitle}+%0A(${encodedYear})&font=georgia`;
+        imgElement.onerror = null; // Prevent infinite loop
+    };
 }
 
 // Setup event listeners
