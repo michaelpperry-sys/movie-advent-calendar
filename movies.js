@@ -88,13 +88,13 @@ const MOVIE_DATABASE = {
             title: "Rare Exports: A Christmas Tale",
             year: 2010,
             poster: "https://image.tmdb.org/t/p/w500/6W0pPL8FpKW4zOLsOMrZXqvQ2Fp.jpg",
-            tmdbId: 43262
+            tmdbId: 48395
         },
         {
             title: "Anna and the Apocalypse",
             year: 2017,
             poster: "https://image.tmdb.org/t/p/w500/dJCGcOuC6hgKEcPc8hMJaJCQQr3.jpg",
-            tmdbId: 433988
+            tmdbId: 461928
         },
         {
             title: "Better Watch Out",
@@ -106,7 +106,7 @@ const MOVIE_DATABASE = {
             title: "Krampus",
             year: 2015,
             poster: "https://image.tmdb.org/t/p/w500/sAolMRYhzTH7M8eJ9smJVe8UBGM.jpg",
-            tmdbId: 272835
+            tmdbId: 287903
         },
         {
             title: "Tokyo Godfathers",
@@ -118,7 +118,7 @@ const MOVIE_DATABASE = {
             title: "The Man Who Invented Christmas",
             year: 2017,
             poster: "https://image.tmdb.org/t/p/w500/3wDyBBfVbEMFBkOKjE2e8M7OOkJ.jpg",
-            tmdbId: 424139
+            tmdbId: 450322
         },
         {
             title: "The Holdovers",
@@ -136,7 +136,7 @@ const MOVIE_DATABASE = {
             title: "In Bruges",
             year: 2008,
             poster: "https://image.tmdb.org/t/p/w500/5tT1sCUM5kZ2xvHLsbaDqcWmfB0.jpg",
-            tmdbId: 9854
+            tmdbId: 8321
         },
         {
             title: "Die Hard",
@@ -154,7 +154,7 @@ const MOVIE_DATABASE = {
             title: "The Night Before",
             year: 2015,
             poster: "https://image.tmdb.org/t/p/w500/fQJIHP9JNwuCPwUiHqDhDZWGKBU.jpg",
-            tmdbId: 254470
+            tmdbId: 296100
         }
     ],
 
