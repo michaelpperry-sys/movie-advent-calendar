@@ -75,12 +75,6 @@ const MOVIE_DATABASE = {
             tmdbId: 471415
         },
         {
-            title: "Spirited",
-            year: 2022,
-            poster: "https://image.tmdb.org/t/p/w500/h3zAzTMs5EP3cKusOxFNGSFE1WI.jpg",
-            tmdbId: 777245
-        },
-        {
             title: "Noelle",
             year: 2019,
             poster: "https://image.tmdb.org/t/p/w500/7CJzuNIzWOFLFIXkLe6ck6aLfr7.jpg",
@@ -189,12 +183,6 @@ const MOVIE_DATABASE = {
             year: 2003,
             poster: "https://image.tmdb.org/t/p/w500/oGGwEs20FZKOo28OKTq3cyvJDvJ.jpg",
             tmdbId: 10719
-        },
-        {
-            title: "Love Actually",
-            year: 2003,
-            poster: "https://image.tmdb.org/t/p/w500/1ODdWLpyOnIVl0l67GrdaFDlJGf.jpg",
-            tmdbId: 508
         },
         {
             title: "The Nightmare Before Christmas",
