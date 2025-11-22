@@ -6,7 +6,7 @@ const TOTAL_DAYS = 28;
 
 // TMDB API Configuration
 // Get your free API key at: https://www.themoviedb.org/settings/api
-const TMDB_API_KEY = 'YOUR_TMDB_API_KEY_HERE'; // Replace with your API key
+const TMDB_API_KEY = '4aee5b1e27484ae41ca1d919dc1c203f'; // Replace with your API key
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
 
 // Calendar state
@@ -17,7 +17,7 @@ let fannyAlexanderDay = null;
 
 // Fetch poster URL from TMDB API
 async function fetchPosterUrl(tmdbId) {
-    if (TMDB_API_KEY === 'YOUR_TMDB_API_KEY_HERE') {
+    if (TMDB_API_KEY === '4aee5b1e27484ae41ca1d919dc1c203f') {
         return null; // No API key set, will use fallback
     }
 
@@ -54,7 +54,7 @@ async function fetchAllPosters() {
         return;
     }
 
-    if (TMDB_API_KEY === 'YOUR_TMDB_API_KEY_HERE') {
+    if (TMDB_API_KEY === '4aee5b1e27484ae41ca1d919dc1c203f') {
         console.warn('TMDB API key not configured. Using fallback placeholders.');
         return;
     }
