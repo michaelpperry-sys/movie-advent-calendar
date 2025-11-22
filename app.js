@@ -4,14 +4,111 @@ const START_DATE = new Date(YEAR, 10, 28); // November 28, 2025
 const END_DATE = new Date(YEAR, 11, 25); // December 25, 2025
 const TOTAL_DAYS = 28;
 
+// TMDB API Configuration
+// Get your free API key at: https://www.themoviedb.org/settings/api
+const TMDB_API_KEY = 'YOUR_TMDB_API_KEY_HERE'; // Replace with your API key
+const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
+
 // Calendar state
 let calendarCode = '';
 let movieSequence = [];
 let openedBoxes = new Set();
 let fannyAlexanderDay = null;
 
+// Fetch poster URL from TMDB API
+async function fetchPosterUrl(tmdbId) {
+    if (TMDB_API_KEY === 'YOUR_TMDB_API_KEY_HERE') {
+        return null; // No API key set, will use fallback
+    }
+
+    try {
+        const response = await fetch(
+            `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${TMDB_API_KEY}`
+        );
+        const data = await response.json();
+
+        if (data.poster_path) {
+            return `${TMDB_IMAGE_BASE}${data.poster_path}`;
+        }
+    } catch (error) {
+        console.warn(`Failed to fetch poster for TMDB ID ${tmdbId}:`, error);
+    }
+
+    return null;
+}
+
+// Fetch all poster URLs and update the movie database
+async function fetchAllPosters() {
+    // Check if we have cached posters (cache for 7 days)
+    const cacheKey = 'tmdb_posters_cache';
+    const cacheTimeKey = 'tmdb_posters_cache_time';
+    const cached = localStorage.getItem(cacheKey);
+    const cacheTime = localStorage.getItem(cacheTimeKey);
+    const now = Date.now();
+    const sevenDays = 7 * 24 * 60 * 60 * 1000;
+
+    if (cached && cacheTime && (now - parseInt(cacheTime)) < sevenDays) {
+        // Use cached posters
+        const cachedPosters = JSON.parse(cached);
+        updateMoviePosterUrls(cachedPosters);
+        return;
+    }
+
+    if (TMDB_API_KEY === 'YOUR_TMDB_API_KEY_HERE') {
+        console.warn('TMDB API key not configured. Using fallback placeholders.');
+        return;
+    }
+
+    // Fetch fresh posters
+    const posterMap = {};
+    const allMovies = [
+        ...MOVIE_DATABASE.fixed.christmas,
+        MOVIE_DATABASE.fixed.blackFriday,
+        MOVIE_DATABASE.fixed.fannyAndAlexander,
+        MOVIE_DATABASE.fixed.homeAlone,
+        ...MOVIE_DATABASE.early,
+        ...MOVIE_DATABASE.middle,
+        ...MOVIE_DATABASE.late
+    ];
+
+    // Fetch all posters in parallel
+    await Promise.all(
+        allMovies.map(async (movie) => {
+            const posterUrl = await fetchPosterUrl(movie.tmdbId);
+            if (posterUrl) {
+                posterMap[movie.tmdbId] = posterUrl;
+            }
+        })
+    );
+
+    // Cache the results
+    localStorage.setItem(cacheKey, JSON.stringify(posterMap));
+    localStorage.setItem(cacheTimeKey, now.toString());
+
+    // Update movie database with fresh URLs
+    updateMoviePosterUrls(posterMap);
+}
+
+// Update movie poster URLs in the database
+function updateMoviePosterUrls(posterMap) {
+    const updateMovie = (movie) => {
+        if (posterMap[movie.tmdbId]) {
+            movie.poster = posterMap[movie.tmdbId];
+        }
+    };
+
+    MOVIE_DATABASE.fixed.christmas.forEach(updateMovie);
+    updateMovie(MOVIE_DATABASE.fixed.blackFriday);
+    updateMovie(MOVIE_DATABASE.fixed.fannyAndAlexander);
+    updateMovie(MOVIE_DATABASE.fixed.homeAlone);
+    MOVIE_DATABASE.early.forEach(updateMovie);
+    MOVIE_DATABASE.middle.forEach(updateMovie);
+    MOVIE_DATABASE.late.forEach(updateMovie);
+}
+
 // Initialize the application
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await fetchAllPosters();
     initializeCalendar();
     setupEventListeners();
     checkResetButton();

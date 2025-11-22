@@ -55,6 +55,29 @@ The calendar features a carefully curated selection of holiday movies organized 
 1. Open `index.html` in any modern web browser
 2. That's it! No build process, no dependencies required
 
+### 🎬 Movie Poster Setup (Optional but Recommended)
+
+To display real movie posters from TMDB:
+
+1. **Get a free TMDB API key**:
+   - Go to https://www.themoviedb.org/signup
+   - Create a free account
+   - Navigate to Settings → API
+   - Request an API key (select "Developer")
+   - Copy your API Key (v3 auth)
+
+2. **Add the API key to the app**:
+   - Open `app.js` in a text editor
+   - Find line 9: `const TMDB_API_KEY = 'YOUR_TMDB_API_KEY_HERE';`
+   - Replace `'YOUR_TMDB_API_KEY_HERE'` with your actual API key
+   - Save the file
+
+3. **Refresh your browser** - posters will now load automatically!
+
+**Note**: Without an API key, the app will use festive styled placeholders with movie titles and years, which still look great!
+
+The app caches poster URLs for 7 days to minimize API calls.
+
 ### Sharing Your Calendar
 1. Click the **"📤 Share Calendar"** button
 2. Copy the generated URL
