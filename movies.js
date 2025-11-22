@@ -79,6 +79,12 @@ const MOVIE_DATABASE = {
             year: 2019,
             poster: "https://image.tmdb.org/t/p/w500/7CJzuNIzWOFLFIXkLe6ck6aLfr7.jpg",
             tmdbId: 454467
+        },
+        {
+            title: "The Christmas Chronicles",
+            year: 2018,
+            poster: "https://image.tmdb.org/t/p/w500/5Il2EMSF2GQJnpv0ZE1PaMGBgKp.jpg",
+            tmdbId: 527435
         }
     ],
 
@@ -197,10 +203,10 @@ const MOVIE_DATABASE = {
             tmdbId: 284
         },
         {
-            title: "The Polar Express",
-            year: 2004,
-            poster: "https://image.tmdb.org/t/p/w500/58oRQlK7aPVCfsJIcDhOcRVMldp.jpg",
-            tmdbId: 5255
+            title: "National Lampoon's Christmas Vacation",
+            year: 1989,
+            poster: "https://image.tmdb.org/t/p/w500/lJOKD2ucWfL9vWpPJFvVdssWfkr.jpg",
+            tmdbId: 5825
         }
     ]
 };
