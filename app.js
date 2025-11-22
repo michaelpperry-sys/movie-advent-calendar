@@ -23,7 +23,7 @@ async function fetchPosterUrl(tmdbId) {
 
     try {
         const response = await fetch(
-            `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${TMDB_API_KEY}`
+            `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${4aee5b1e27484ae41ca1d919dc1c203f}`
         );
         const data = await response.json();
 
