@@ -17,13 +17,13 @@ let fannyAlexanderDay = null;
 
 // Fetch poster URL from TMDB API
 async function fetchPosterUrl(tmdbId) {
-    if (TMDB_API_KEY === '4aee5b1e27484ae41ca1d919dc1c203f') {
+    if (TMDB_API_KEY === 'YOUR_TMDB_API_KEY_HERE') {
         return null; // No API key set, will use fallback
     }
 
     try {
         const response = await fetch(
-            `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${4aee5b1e27484ae41ca1d919dc1c203f}`
+            `https://api.themoviedb.org/3/movie/${tmdbId}?api_key=${TMDB_API_KEY}`
         );
         const data = await response.json();
 
@@ -54,7 +54,7 @@ async function fetchAllPosters() {
         return;
     }
 
-    if (TMDB_API_KEY === '4aee5b1e27484ae41ca1d919dc1c203f') {
+    if (TMDB_API_KEY === 'YOUR_TMDB_API_KEY_HERE') {
         console.warn('TMDB API key not configured. Using fallback placeholders.');
         return;
     }
