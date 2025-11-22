@@ -7,10 +7,10 @@ const MOVIE_DATABASE = {
     fixed: {
         christmas: [
             { title: "The Muppet Christmas Carol", year: 1992, tmdbId: 10437 },
-            { title: "A Charlie Brown Christmas", year: 1965, tmdbId: 1358 }
+            { title: "A Charlie Brown Christmas", year: 1965, tmdbId: 13187 }
         ],
         blackFriday: { title: "Falling for Christmas", year: 2022, tmdbId: 835939 },
-        fannyAndAlexander: { title: "Fanny and Alexander", year: 1982, tmdbId: 2178 },
+        fannyAndAlexander: { title: "Fanny and Alexander", year: 1982, tmdbId: 5961 },
         homeAlone: { title: "Home Alone", year: 1990, tmdbId: 771 }
     },
     early: [
@@ -27,7 +27,7 @@ const MOVIE_DATABASE = {
         { title: "Anna and the Apocalypse", year: 2017, tmdbId: 433988 },
         { title: "Better Watch Out", year: 2016, tmdbId: 425336 },
         { title: "Krampus", year: 2015, tmdbId: 272835 },
-        { title: "Tokyo Godfathers", year: 2003, tmdbId: 4187 },
+        { title: "Tokyo Godfathers", year: 2003, tmdbId: 13398 },
         { title: "The Man Who Invented Christmas", year: 2017, tmdbId: 424139 },
         { title: "The Holdovers", year: 2023, tmdbId: 840430 },
         { title: "Carol", year: 2015, tmdbId: 258480 },
@@ -39,7 +39,7 @@ const MOVIE_DATABASE = {
     late: [
         { title: "It's a Wonderful Life", year: 1946, tmdbId: 1585 },
         { title: "Miracle on 34th Street", year: 1947, tmdbId: 11881 },
-        { title: "White Christmas", year: 1954, tmdbId: 16530 },
+        { title: "White Christmas", year: 1954, tmdbId: 13368 },
         { title: "Elf", year: 2003, tmdbId: 10719 },
         { title: "The Nightmare Before Christmas", year: 1993, tmdbId: 9479 },
         { title: "The Apartment", year: 1960, tmdbId: 284 },
@@ -83,22 +83,38 @@ async function verifyTmdbId(movie) {
         // Extract year from release_date
         const tmdbYear = data.release_date ? parseInt(data.release_date.substring(0, 4)) : null;
         const tmdbTitle = data.title;
+        const isAdult = data.adult || false;
+        const genres = data.genres || [];
+        const genreNames = genres.map(g => g.name);
 
         // Check for mismatches
         const titleMatch = tmdbTitle.toLowerCase() === movie.title.toLowerCase();
         const yearMatch = tmdbYear === movie.year;
 
-        if (!titleMatch || !yearMatch) {
+        // Check for inappropriate content
+        const warnings = [];
+        if (isAdult) {
+            warnings.push('ADULT CONTENT FLAGGED');
+        }
+
+        // Check for potentially problematic genres (this is just for awareness)
+        const concerningGenres = ['Horror', 'Thriller'];
+        const hasConcerningGenre = genreNames.some(g => concerningGenres.includes(g));
+
+        if (!titleMatch || !yearMatch || isAdult) {
             return {
                 movie: movie,
                 status: 'mismatch',
                 tmdbData: {
                     title: tmdbTitle,
                     year: tmdbYear,
-                    id: data.id
+                    id: data.id,
+                    adult: isAdult,
+                    genres: genreNames
                 },
                 titleMatch,
-                yearMatch
+                yearMatch,
+                warnings
             };
         }
 
@@ -107,8 +123,11 @@ async function verifyTmdbId(movie) {
             status: 'match',
             tmdbData: {
                 title: tmdbTitle,
-                year: tmdbYear
-            }
+                year: tmdbYear,
+                adult: isAdult,
+                genres: genreNames
+            },
+            warnings
         };
 
     } catch (error) {
@@ -152,10 +171,20 @@ async function verifyAllMovies() {
 
         if (result.status === 'match') {
             console.log(`  ✓ MATCH: TMDB has "${result.tmdbData.title}" (${result.tmdbData.year})`);
+            console.log(`    Adult: ${result.tmdbData.adult ? 'YES ⚠️' : 'No'}`);
+            console.log(`    Genres: ${result.tmdbData.genres.join(', ')}`);
+            if (result.warnings && result.warnings.length > 0) {
+                console.log(`    ⚠️  WARNINGS: ${result.warnings.join(', ')}`);
+            }
         } else if (result.status === 'mismatch') {
             console.log(`  ✗ MISMATCH!`);
             console.log(`    Expected: "${movie.title}" (${movie.year})`);
             console.log(`    TMDB has: "${result.tmdbData.title}" (${result.tmdbData.year})`);
+            console.log(`    Adult: ${result.tmdbData.adult ? 'YES ⚠️' : 'No'}`);
+            console.log(`    Genres: ${result.tmdbData.genres.join(', ')}`);
+            if (result.warnings && result.warnings.length > 0) {
+                console.log(`    ⚠️  WARNINGS: ${result.warnings.join(', ')}`);
+            }
         } else if (result.status === 'error') {
             console.log(`  ⚠ ERROR: ${result.message}`);
         }
@@ -171,11 +200,13 @@ async function verifyAllMovies() {
     const matches = results.filter(r => r.status === 'match');
     const mismatches = results.filter(r => r.status === 'mismatch');
     const errors = results.filter(r => r.status === 'error');
+    const adultContent = results.filter(r => r.tmdbData && r.tmdbData.adult);
 
     console.log(`\nTotal movies checked: ${results.length}`);
     console.log(`✓ Matches: ${matches.length}`);
     console.log(`✗ Mismatches: ${mismatches.length}`);
     console.log(`⚠ Errors: ${errors.length}`);
+    console.log(`🔞 Adult Content Flagged: ${adultContent.length}`);
 
     if (mismatches.length > 0) {
         console.log('\n' + '='.repeat(80));
@@ -199,6 +230,20 @@ async function verifyAllMovies() {
             console.log(`\n${index + 1}. ${result.movie.title} (${result.movie.year})`);
             console.log(`   TMDB ID: ${result.movie.tmdbId}`);
             console.log(`   Error: ${result.message}`);
+        });
+    }
+
+    if (adultContent.length > 0) {
+        console.log('\n' + '='.repeat(80));
+        console.log('⚠️  ADULT CONTENT WARNINGS:');
+        console.log('='.repeat(80));
+
+        adultContent.forEach((result, index) => {
+            console.log(`\n${index + 1}. ${result.movie.title} (${result.movie.year})`);
+            console.log(`   TMDB ID: ${result.movie.tmdbId}`);
+            console.log(`   TMDB Title: "${result.tmdbData.title}"`);
+            console.log(`   Genres: ${result.tmdbData.genres.join(', ')}`);
+            console.log(`   ⚠️  This movie is flagged as adult content in TMDB`);
         });
     }
 
