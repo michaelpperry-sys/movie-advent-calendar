@@ -20,7 +20,7 @@
 }
 
 body {
-    font-family: 'Georgia', serif;
+    font-family: 'Cormorant Garamond', serif;
     background: linear-gradient(135deg, var(--dark-green) 0%, var(--green) 50%, var(--dark-green) 100%);
     min-height: 100vh;
     color: var(--cream);
@@ -113,7 +113,7 @@ h1 {
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
-    font-family: 'Georgia', serif;
+    font-family: 'Cormorant Garamond', serif;
 }
 
 .btn-share {

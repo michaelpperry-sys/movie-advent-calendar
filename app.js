@@ -266,7 +266,7 @@ function createCalendarBox(dayIndex, boxDate, today) {
     box.className = 'calendar-box';
     box.dataset.day = dayIndex;
 
-    const isUnlocked = true; // Testing mode - all boxes unlocked
+    const isUnlocked = boxDate <= today;
     const isToday = boxDate.getTime() === today.getTime();
     const isOpened = openedBoxes.has(dayIndex);
     const isChristmas = dayIndex === 27;
