@@ -13,7 +13,7 @@ const MOVIE_DATABASE = {
                 title: "A Charlie Brown Christmas",
                 year: 1965,
                 poster: "https://image.tmdb.org/t/p/w500/2VubJULkSAkHKczNjjiG1B1FHte.jpg",
-                tmdbId: 1358
+                tmdbId: 13187
             }
         ],
         blackFriday: {
@@ -26,7 +26,7 @@ const MOVIE_DATABASE = {
             title: "Fanny and Alexander",
             year: 1982,
             poster: "https://image.tmdb.org/t/p/w500/6x0LwMEP5R62xOW40dNdVlfhF1e.jpg",
-            tmdbId: 2178
+            tmdbId: 5961
         },
         homeAlone: {
             title: "Home Alone",
@@ -112,7 +112,7 @@ const MOVIE_DATABASE = {
             title: "Tokyo Godfathers",
             year: 2003,
             poster: "https://image.tmdb.org/t/p/w500/4KduJy9rPD89xJIHhq5r1EnLxiY.jpg",
-            tmdbId: 4187
+            tmdbId: 13398
         },
         {
             title: "The Man Who Invented Christmas",
@@ -176,7 +176,7 @@ const MOVIE_DATABASE = {
             title: "White Christmas",
             year: 1954,
             poster: "https://image.tmdb.org/t/p/w500/rMJR7O6lf04Rr4jPRJKXp5wkXXr.jpg",
-            tmdbId: 16530
+            tmdbId: 13368
         },
         {
             title: "Elf",
