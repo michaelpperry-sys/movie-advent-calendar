@@ -262,6 +262,23 @@ h1 {
     box-shadow: 0 0 40px rgba(212, 175, 55, 1);
 }
 
+/* Bonus Box Styling */
+.bonus-box {
+    background: linear-gradient(135deg, var(--silver) 0%, var(--light-silver) 100%);
+    border: 3px solid var(--dark-gold);
+}
+
+.bonus-box.unlocked {
+    animation: pulse 2s ease-in-out infinite;
+    border-color: var(--dark-gold);
+    box-shadow: 0 0 20px rgba(170, 138, 46, 0.6);
+}
+
+.bonus-box.opened {
+    background: linear-gradient(135deg, var(--dark-gold) 0%, #8B7500 100%);
+    border-color: var(--silver);
+}
+
 /* Hover Effects */
 .calendar-box:not(.locked):hover {
     transform: scale(1.05) rotate(2deg);

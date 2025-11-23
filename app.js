@@ -1,24 +1,21 @@
 // Constants
 const YEAR = 2025;
 const START_DATE = new Date(YEAR, 10, 28); // November 28, 2025
-const END_DATE = new Date(YEAR, 11, 25); // December 25, 2025
-const TOTAL_DAYS = 28;
+const END_DATE = new Date(YEAR + 1, 0, 1); // January 1, 2026
+const TOTAL_DAYS = 35; // Nov 28 - Jan 1
 
 // TMDB API Configuration
-// Get your free API key at: https://www.themoviedb.org/settings/api
-const TMDB_API_KEY = '4aee5b1e27484ae41ca1d919dc1c203f'; // Replace with your API key
+const TMDB_API_KEY = '4aee5b1e27484ae41ca1d919dc1c203f';
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
 
 // Calendar state
-let calendarCode = '';
-let movieSequence = [];
 let openedBoxes = new Set();
-let fannyAlexanderDay = null;
+let openedBonuses = new Set();
 
 // Fetch poster URL from TMDB API
 async function fetchPosterUrl(tmdbId) {
-    if (TMDB_API_KEY === 'YOUR_TMDB_API_KEY_HERE') {
-        return null; // No API key set, will use fallback
+    if (TMDB_API_KEY === 'YOUR_TMDB_API_KEY_HERE' || tmdbId === 0) {
+        return null;
     }
 
     try {
@@ -39,16 +36,14 @@ async function fetchPosterUrl(tmdbId) {
 
 // Fetch all poster URLs and update the movie database
 async function fetchAllPosters() {
-    // Check if we have cached posters (cache for 7 days)
-    const cacheKey = 'tmdb_posters_cache';
-    const cacheTimeKey = 'tmdb_posters_cache_time';
+    const cacheKey = 'tmdb_posters_cache_v2';
+    const cacheTimeKey = 'tmdb_posters_cache_time_v2';
     const cached = localStorage.getItem(cacheKey);
     const cacheTime = localStorage.getItem(cacheTimeKey);
     const now = Date.now();
     const sevenDays = 7 * 24 * 60 * 60 * 1000;
 
     if (cached && cacheTime && (now - parseInt(cacheTime)) < sevenDays) {
-        // Use cached posters
         const cachedPosters = JSON.parse(cached);
         updateMoviePosterUrls(cachedPosters);
         return;
@@ -59,188 +54,79 @@ async function fetchAllPosters() {
         return;
     }
 
-    // Fetch fresh posters
+    // Collect all movies
     const posterMap = {};
     const allMovies = [
-        ...MOVIE_DATABASE.fixed.christmas,
-        MOVIE_DATABASE.fixed.blackFriday,
-        MOVIE_DATABASE.fixed.fannyAndAlexander,
-        MOVIE_DATABASE.fixed.homeAlone,
-        ...MOVIE_DATABASE.early,
-        ...MOVIE_DATABASE.middle,
-        ...MOVIE_DATABASE.late
+        ...MOVIE_DATABASE.daily.flat(), // flat() handles the Christmas array
+        ...MOVIE_DATABASE.bonus
     ];
 
     // Fetch all posters in parallel
     await Promise.all(
         allMovies.map(async (movie) => {
-            const posterUrl = await fetchPosterUrl(movie.tmdbId);
-            if (posterUrl) {
-                posterMap[movie.tmdbId] = posterUrl;
+            if (movie.tmdbId && movie.tmdbId !== 0) {
+                const posterUrl = await fetchPosterUrl(movie.tmdbId);
+                if (posterUrl) {
+                    posterMap[movie.tmdbId] = posterUrl;
+                }
             }
         })
     );
 
-    // Cache the results
     localStorage.setItem(cacheKey, JSON.stringify(posterMap));
     localStorage.setItem(cacheTimeKey, now.toString());
 
-    // Update movie database with fresh URLs
     updateMoviePosterUrls(posterMap);
 }
 
 // Update movie poster URLs in the database
 function updateMoviePosterUrls(posterMap) {
     const updateMovie = (movie) => {
-        if (posterMap[movie.tmdbId]) {
+        if (movie.tmdbId && posterMap[movie.tmdbId]) {
             movie.poster = posterMap[movie.tmdbId];
         }
     };
 
-    MOVIE_DATABASE.fixed.christmas.forEach(updateMovie);
-    updateMovie(MOVIE_DATABASE.fixed.blackFriday);
-    updateMovie(MOVIE_DATABASE.fixed.fannyAndAlexander);
-    updateMovie(MOVIE_DATABASE.fixed.homeAlone);
-    MOVIE_DATABASE.early.forEach(updateMovie);
-    MOVIE_DATABASE.middle.forEach(updateMovie);
-    MOVIE_DATABASE.late.forEach(updateMovie);
+    MOVIE_DATABASE.daily.forEach(item => {
+        if (Array.isArray(item)) {
+            item.forEach(updateMovie);
+        } else {
+            updateMovie(item);
+        }
+    });
+    MOVIE_DATABASE.bonus.forEach(updateMovie);
 }
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', async () => {
     await fetchAllPosters();
-    initializeCalendar();
+    loadOpenedBoxes();
+    renderCalendar();
+    renderBonusMovies();
     setupEventListeners();
     checkResetButton();
 });
 
-// Initialize calendar
-function initializeCalendar() {
-    // Get or create calendar code from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    calendarCode = urlParams.get('calendar') || generateCalendarCode();
-
-    // Load or generate movie sequence
-    loadMovieSequence();
-
-    // Load opened boxes from localStorage
-    loadOpenedBoxes();
-
-    // Render calendar
-    renderCalendar();
-}
-
-// Generate a unique calendar code
-function generateCalendarCode() {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-}
-
-// Load movie sequence from localStorage or generate new one
-function loadMovieSequence() {
-    const storageKey = `movieSequence_${calendarCode}`;
-    const stored = localStorage.getItem(storageKey);
-
-    if (stored) {
-        const data = JSON.parse(stored);
-        movieSequence = data.sequence;
-        fannyAlexanderDay = data.fannyAlexanderDay;
-    } else {
-        generateMovieSequence();
-        saveMovieSequence();
-    }
-}
-
-// Generate movie sequence with tiering
-function generateMovieSequence() {
-    movieSequence = new Array(TOTAL_DAYS);
-
-    // Assign fixed movies
-    // Day 1 (Nov 28) - Black Friday movie
-    movieSequence[0] = MOVIE_DATABASE.fixed.blackFriday;
-
-    // Day 28 (Dec 25) - Christmas double feature
-    movieSequence[27] = MOVIE_DATABASE.fixed.christmas;
-
-    // Randomly select weekend day for Fanny and Alexander (excluding day 1 and 28)
-    const weekendDays = [];
-    for (let i = 1; i < 27; i++) {
-        const date = new Date(START_DATE);
-        date.setDate(date.getDate() + i);
-        const dayOfWeek = date.getDay();
-        if (dayOfWeek === 0 || dayOfWeek === 6) { // Sunday or Saturday
-            weekendDays.push(i);
-        }
-    }
-    fannyAlexanderDay = weekendDays[Math.floor(Math.random() * weekendDays.length)];
-    movieSequence[fannyAlexanderDay] = MOVIE_DATABASE.fixed.fannyAndAlexander;
-
-    // Assign Home Alone to one of Dec 20-24 (days 23-27, but 27 is Christmas)
-    const homeAloneDays = [22, 23, 24, 25, 26]; // Days 23-27 (Dec 20-24)
-    const homeAloneDay = homeAloneDays[Math.floor(Math.random() * homeAloneDays.length)];
-    movieSequence[homeAloneDay] = MOVIE_DATABASE.fixed.homeAlone;
-
-    // Get shuffled pools
-    const earlyPool = shuffle([...MOVIE_DATABASE.early]);
-    const middlePool = shuffle([...MOVIE_DATABASE.middle]);
-    const latePool = shuffle([...MOVIE_DATABASE.late]);
-
-    // Assign early tier (Nov 28 - Dec 7 = days 0-9)
-    let earlyIndex = 0;
-    for (let i = 1; i < 10; i++) {
-        if (!movieSequence[i]) {
-            movieSequence[i] = earlyPool[earlyIndex++];
-        }
-    }
-
-    // Assign middle tier (Dec 8 - Dec 18 = days 10-20)
-    let middleIndex = 0;
-    for (let i = 10; i <= 20; i++) {
-        if (!movieSequence[i]) {
-            movieSequence[i] = middlePool[middleIndex++];
-        }
-    }
-
-    // Assign late tier (Dec 19 - Dec 24 = days 21-26)
-    let lateIndex = 0;
-    for (let i = 21; i <= 26; i++) {
-        if (!movieSequence[i]) {
-            movieSequence[i] = latePool[lateIndex++];
-        }
-    }
-}
-
-// Shuffle array (Fisher-Yates)
-function shuffle(array) {
-    const shuffled = [...array];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-}
-
-// Save movie sequence to localStorage
-function saveMovieSequence() {
-    const storageKey = `movieSequence_${calendarCode}`;
-    localStorage.setItem(storageKey, JSON.stringify({
-        sequence: movieSequence,
-        fannyAlexanderDay: fannyAlexanderDay
-    }));
-}
-
 // Load opened boxes from localStorage
 function loadOpenedBoxes() {
-    const userKey = `openedBoxes_${calendarCode}_user`;
-    const stored = localStorage.getItem(userKey);
-    if (stored) {
-        openedBoxes = new Set(JSON.parse(stored));
+    const dailyKey = 'openedBoxes_daily';
+    const bonusKey = 'openedBoxes_bonus';
+
+    const storedDaily = localStorage.getItem(dailyKey);
+    const storedBonus = localStorage.getItem(bonusKey);
+
+    if (storedDaily) {
+        openedBoxes = new Set(JSON.parse(storedDaily));
+    }
+    if (storedBonus) {
+        openedBonuses = new Set(JSON.parse(storedBonus));
     }
 }
 
 // Save opened boxes to localStorage
 function saveOpenedBoxes() {
-    const userKey = `openedBoxes_${calendarCode}_user`;
-    localStorage.setItem(userKey, JSON.stringify([...openedBoxes]));
+    localStorage.setItem('openedBoxes_daily', JSON.stringify([...openedBoxes]));
+    localStorage.setItem('openedBoxes_bonus', JSON.stringify([...openedBonuses]));
 }
 
 // Render calendar grid
@@ -266,7 +152,7 @@ function createCalendarBox(dayIndex, boxDate, today) {
     box.className = 'calendar-box';
     box.dataset.day = dayIndex;
 
-    const isUnlocked = boxDate <= today;
+    const isUnlocked = true; // Testing mode - all boxes unlocked
     const isToday = boxDate.getTime() === today.getTime();
     const isOpened = openedBoxes.has(dayIndex);
     const isChristmas = dayIndex === 27;
@@ -311,6 +197,68 @@ function createCalendarBox(dayIndex, boxDate, today) {
     return box;
 }
 
+// Render bonus movies section
+function renderBonusMovies() {
+    const grid = document.getElementById('calendarGrid');
+
+    // Add a separator
+    const separator = document.createElement('div');
+    separator.style.gridColumn = '1 / -1';
+    separator.style.margin = '2rem 0 1rem 0';
+    separator.innerHTML = '<h2 style="text-align: center; color: var(--gold);">🎁 Bonus Movies 🎁</h2>';
+    grid.appendChild(separator);
+
+    const today = new Date();
+    const startDate = new Date(START_DATE);
+    const weeksPassed = Math.floor((today - startDate) / (7 * 24 * 60 * 60 * 1000));
+
+    MOVIE_DATABASE.bonus.forEach((movie, index) => {
+        const box = createBonusBox(movie, index, weeksPassed);
+        grid.appendChild(box);
+    });
+}
+
+// Create bonus movie box
+function createBonusBox(movie, index, weeksPassed) {
+    const box = document.createElement('div');
+    box.className = 'calendar-box bonus-box';
+    box.dataset.bonus = index;
+
+    const isUnlocked = true; // Testing mode
+    const isOpened = openedBonuses.has(index);
+
+    if (!isUnlocked) {
+        box.classList.add('locked');
+    } else if (isOpened) {
+        box.classList.add('opened');
+    } else {
+        box.classList.add('unlocked');
+    }
+
+    const icon = document.createElement('div');
+    icon.className = 'box-icon';
+    icon.textContent = isOpened ? '🎬' : '🎁';
+
+    const title = document.createElement('div');
+    title.className = 'box-number';
+    title.style.fontSize = '1rem';
+    title.textContent = movie.title.substring(0, 20);
+
+    const weekLabel = document.createElement('div');
+    weekLabel.className = 'box-date';
+    weekLabel.textContent = `Week ${movie.unlockWeek}`;
+
+    box.appendChild(icon);
+    box.appendChild(title);
+    box.appendChild(weekLabel);
+
+    if (isUnlocked) {
+        box.addEventListener('click', () => openBonusMovie(index));
+    }
+
+    return box;
+}
+
 // Get icon for box based on state
 function getBoxIcon(dayIndex, isOpened, isUnlocked) {
     if (!isUnlocked) return '🔒';
@@ -326,22 +274,29 @@ function formatDate(date) {
 
 // Open a calendar box
 function openBox(dayIndex) {
-    const movie = movieSequence[dayIndex];
+    const movie = MOVIE_DATABASE.daily[dayIndex];
 
     if (!movie) {
         console.error('No movie found for day', dayIndex);
         return;
     }
 
-    // Mark as opened
     openedBoxes.add(dayIndex);
     saveOpenedBoxes();
-
-    // Show movie modal
     showMovieModal(movie, dayIndex);
-
-    // Update box appearance
     renderCalendar();
+    renderBonusMovies();
+}
+
+// Open a bonus movie
+function openBonusMovie(index) {
+    const movie = MOVIE_DATABASE.bonus[index];
+
+    openedBonuses.add(index);
+    saveOpenedBoxes();
+    showBonusModal(movie);
+    renderCalendar();
+    renderBonusMovies();
 }
 
 // Show movie reveal modal
@@ -368,26 +323,38 @@ function showMovieModal(movie, dayIndex) {
     modal.style.display = 'block';
 }
 
+// Show bonus movie modal
+function showBonusModal(movie) {
+    const modal = document.getElementById('movieModal');
+    const poster = document.getElementById('moviePoster');
+    const title = document.getElementById('movieTitle');
+    const day = document.getElementById('movieDay');
+
+    title.textContent = movie.title;
+    setPosterWithFallback(poster, movie, movie.title);
+    day.textContent = `Bonus Movie • Week ${movie.unlockWeek}`;
+
+    modal.style.display = 'block';
+}
+
 // Set poster image with fallback to placeholder
 function setPosterWithFallback(imgElement, movie, altText) {
     imgElement.alt = `${altText} Poster`;
 
     // Try TMDB image first
-    imgElement.src = movie.poster;
+    imgElement.src = movie.poster || `https://placehold.co/500x750/0F5132/D4AF37?text=${encodeURIComponent(movie.title)}+%0A(${movie.year})&font=cormorant-garamond`;
 
     // If TMDB fails, use placeholder with movie title and year
     imgElement.onerror = function() {
         const encodedTitle = encodeURIComponent(movie.title);
         const encodedYear = encodeURIComponent(movie.year);
-        // Use a placeholder service that creates a nice image with text
-        imgElement.src = `https://placehold.co/500x750/0F5132/D4AF37?text=${encodedTitle}+%0A(${encodedYear})&font=georgia`;
-        imgElement.onerror = null; // Prevent infinite loop
+        imgElement.src = `https://placehold.co/500x750/0F5132/D4AF37?text=${encodedTitle}+%0A(${encodedYear})&font=cormorant-garamond`;
+        imgElement.onerror = null;
     };
 }
 
 // Setup event listeners
 function setupEventListeners() {
-    // Modal close buttons
     const modals = document.querySelectorAll('.modal');
     const closeButtons = document.querySelectorAll('.close');
 
@@ -397,7 +364,6 @@ function setupEventListeners() {
         });
     });
 
-    // Click outside modal to close
     window.addEventListener('click', (e) => {
         modals.forEach(modal => {
             if (e.target === modal) {
@@ -406,13 +372,8 @@ function setupEventListeners() {
         });
     });
 
-    // Share button
     document.getElementById('shareBtn').addEventListener('click', showShareModal);
-
-    // Copy button
     document.getElementById('copyBtn').addEventListener('click', copyShareLink);
-
-    // Reset button
     document.getElementById('resetBtn').addEventListener('click', resetCalendar);
 }
 
@@ -420,10 +381,8 @@ function setupEventListeners() {
 function showShareModal() {
     const modal = document.getElementById('shareModal');
     const shareLink = document.getElementById('shareLink');
-
-    const url = `${window.location.origin}${window.location.pathname}?calendar=${calendarCode}`;
+    const url = window.location.href.split('?')[0];
     shareLink.value = url;
-
     modal.style.display = 'block';
 }
 
@@ -431,7 +390,7 @@ function showShareModal() {
 function copyShareLink() {
     const shareLink = document.getElementById('shareLink');
     shareLink.select();
-    shareLink.setSelectionRange(0, 99999); // For mobile devices
+    shareLink.setSelectionRange(0, 99999);
 
     navigator.clipboard.writeText(shareLink.value).then(() => {
         const copyBtn = document.getElementById('copyBtn');
@@ -447,7 +406,7 @@ function copyShareLink() {
 function checkResetButton() {
     const resetBtn = document.getElementById('resetBtn');
     const today = new Date();
-    const resetDate = new Date(YEAR, 11, 26); // December 26
+    const resetDate = new Date(YEAR + 1, 0, 2); // January 2
 
     if (today >= resetDate) {
         resetBtn.disabled = false;
@@ -456,31 +415,22 @@ function checkResetButton() {
 
 // Reset calendar
 function resetCalendar() {
-    if (!confirm('Are you sure you want to reset your calendar? This will clear all opened boxes and generate a new movie sequence.')) {
+    if (!confirm('Are you sure you want to reset your calendar? This will clear all opened boxes.')) {
         return;
     }
 
-    // Clear localStorage
-    const sequenceKey = `movieSequence_${calendarCode}`;
-    const openedKey = `openedBoxes_${calendarCode}_user`;
-
-    localStorage.removeItem(sequenceKey);
-    localStorage.removeItem(openedKey);
-
-    // Generate new calendar code and reinitialize
-    calendarCode = generateCalendarCode();
+    localStorage.removeItem('openedBoxes_daily');
+    localStorage.removeItem('openedBoxes_bonus');
     openedBoxes.clear();
+    openedBonuses.clear();
 
-    // Update URL without reload
-    const url = `${window.location.origin}${window.location.pathname}?calendar=${calendarCode}`;
-    window.history.pushState({}, '', url);
-
-    // Reinitialize
-    initializeCalendar();
+    renderCalendar();
+    renderBonusMovies();
 }
 
-// Update calendar every hour to unlock new boxes at midnight
+// Update calendar every hour
 setInterval(() => {
     renderCalendar();
+    renderBonusMovies();
     checkResetButton();
-}, 60 * 60 * 1000); // Check every hour
+}, 60 * 60 * 1000);
