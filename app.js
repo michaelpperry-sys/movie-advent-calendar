@@ -242,7 +242,7 @@ function createBonusBox(movie, index, weeksPassed) {
     const title = document.createElement('div');
     title.className = 'box-number';
     title.style.fontSize = '1rem';
-    title.textContent = movie.title.substring(0, 20);
+    title.textContent = isUnlocked ? movie.title.substring(0, 20) : '???';
 
     const weekLabel = document.createElement('div');
     weekLabel.className = 'box-date';
