@@ -290,6 +290,7 @@ h1 {
 }
 
 .calendar-box.unlocked {
+    background: linear-gradient(135deg, var(--light-green) 0%, var(--green) 100%);
     animation: pulse 2s ease-in-out infinite;
     border-color: var(--gold);
     box-shadow: 0 0 20px rgba(212, 175, 55, 0.6);
