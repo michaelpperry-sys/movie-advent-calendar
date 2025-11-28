@@ -156,6 +156,7 @@ function createCalendarBox(dayIndex, boxDate, today) {
     const isToday = boxDate.getTime() === today.getTime();
     const isOpened = openedBoxes.has(dayIndex);
     const isChristmas = dayIndex === 27;
+    const isNewYears = dayIndex === 34;
 
     // Apply state classes
     if (!isUnlocked) {
@@ -170,6 +171,10 @@ function createCalendarBox(dayIndex, boxDate, today) {
 
     if (isChristmas) {
         box.classList.add('christmas');
+    }
+
+    if (isNewYears) {
+        box.classList.add('christmas'); // Same styling as Christmas
     }
 
     // Create box content
@@ -264,6 +269,7 @@ function getBoxIcon(dayIndex, isOpened, isUnlocked) {
     if (!isUnlocked) return '🔒';
     if (isOpened) return '🎬';
     if (dayIndex === 27) return '🎅';
+    if (dayIndex === 34) return '🍾';
     return '🎁';
 }
 
