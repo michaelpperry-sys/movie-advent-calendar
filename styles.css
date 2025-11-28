@@ -357,14 +357,15 @@ h1 {
 }
 
 .bonus-box.unlocked {
+    background: linear-gradient(135deg, var(--light-green) 0%, var(--green) 100%);
     animation: pulse 2s ease-in-out infinite;
     border-color: var(--dark-gold);
     box-shadow: 0 0 20px rgba(170, 138, 46, 0.6);
 }
 
 .bonus-box.opened {
-    background: linear-gradient(135deg, var(--dark-gold) 0%, #8B7500 100%);
-    border-color: var(--silver);
+    background: linear-gradient(135deg, var(--red) 0%, #5D0000 100%);
+    border-color: var(--dark-gold);
 }
 
 /* Hover Effects */
