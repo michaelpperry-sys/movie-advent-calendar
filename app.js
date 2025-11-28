@@ -152,7 +152,7 @@ function createCalendarBox(dayIndex, boxDate, today) {
     box.className = 'calendar-box';
     box.dataset.day = dayIndex;
 
-    const isUnlocked = true; // Testing mode - all boxes unlocked
+    const isUnlocked = boxDate <= today;
     const isToday = boxDate.getTime() === today.getTime();
     const isOpened = openedBoxes.has(dayIndex);
     const isChristmas = dayIndex === 27;
@@ -232,7 +232,7 @@ function createBonusBox(movie, index, weeksPassed) {
     box.className = 'calendar-box bonus-box';
     box.dataset.bonus = index;
 
-    const isUnlocked = true; // Testing mode - all bonus movies unlocked
+    const isUnlocked = weeksPassed >= movie.unlockWeek;
     const isOpened = openedBonuses.has(index);
 
     if (!isUnlocked) {
