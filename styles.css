@@ -236,6 +236,7 @@ h1 {
 /* Gift Wrapping Patterns */
 .calendar-box.locked.wrap-pattern-1 {
     background:
+        radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.15) 100%),
         repeating-linear-gradient(
             45deg,
             #DC143C,
@@ -247,26 +248,29 @@ h1 {
 
 .calendar-box.locked.wrap-pattern-2 {
     background:
+        radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.15) 100%),
         radial-gradient(circle, var(--gold) 15%, transparent 15%),
         radial-gradient(circle, var(--gold) 15%, transparent 15%),
         var(--green);
-    background-size: 30px 30px;
-    background-position: 0 0, 15px 15px;
+    background-size: 100% 100%, 30px 30px, 30px 30px, 100% 100%;
+    background-position: center, 0 0, 15px 15px, center;
 }
 
 .calendar-box.locked.wrap-pattern-3 {
     background:
+        radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.15) 100%),
         radial-gradient(circle at 20% 50%, white 5px, transparent 5px),
         radial-gradient(circle at 60% 20%, white 4px, transparent 4px),
         radial-gradient(circle at 80% 80%, white 6px, transparent 6px),
         radial-gradient(circle at 40% 80%, white 5px, transparent 5px),
         linear-gradient(135deg, var(--silver) 0%, var(--light-silver) 100%);
-    background-size: 50px 50px;
-    background-repeat: repeat;
+    background-size: 100% 100%, 50px 50px, 50px 50px, 50px 50px, 50px 50px, 100% 100%;
+    background-repeat: no-repeat, repeat, repeat, repeat, repeat, no-repeat;
 }
 
 .calendar-box.locked.wrap-pattern-4 {
     background:
+        radial-gradient(circle at center, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.15) 100%),
         repeating-linear-gradient(
             0deg,
             #8B0000,
