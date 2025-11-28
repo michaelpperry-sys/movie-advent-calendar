@@ -202,6 +202,10 @@ h1 {
     color: var(--gold);
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     z-index: 1;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    text-align: center;
+    padding: 0 0.5rem;
 }
 
 .box-date {
@@ -219,14 +223,64 @@ h1 {
 
 /* Box States */
 .calendar-box.locked {
-    background: linear-gradient(135deg, var(--dark-silver) 0%, var(--silver) 100%);
-    border-color: var(--dark-silver);
+    border-color: var(--gold);
     cursor: not-allowed;
-    opacity: 0.6;
+    opacity: 0.9;
 }
 
 .calendar-box.locked .box-number {
-    color: var(--dark-green);
+    color: var(--white);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Gift Wrapping Patterns */
+.calendar-box.locked.wrap-pattern-1 {
+    background:
+        repeating-linear-gradient(
+            45deg,
+            #DC143C,
+            #DC143C 20px,
+            white 20px,
+            white 40px
+        );
+}
+
+.calendar-box.locked.wrap-pattern-2 {
+    background:
+        radial-gradient(circle, var(--gold) 15%, transparent 15%),
+        radial-gradient(circle, var(--gold) 15%, transparent 15%),
+        var(--green);
+    background-size: 30px 30px;
+    background-position: 0 0, 15px 15px;
+}
+
+.calendar-box.locked.wrap-pattern-3 {
+    background:
+        radial-gradient(circle at 20% 50%, white 5px, transparent 5px),
+        radial-gradient(circle at 60% 20%, white 4px, transparent 4px),
+        radial-gradient(circle at 80% 80%, white 6px, transparent 6px),
+        radial-gradient(circle at 40% 80%, white 5px, transparent 5px),
+        linear-gradient(135deg, var(--silver) 0%, var(--light-silver) 100%);
+    background-size: 50px 50px;
+    background-repeat: repeat;
+}
+
+.calendar-box.locked.wrap-pattern-4 {
+    background:
+        repeating-linear-gradient(
+            0deg,
+            #8B0000,
+            #8B0000 15px,
+            #006400 15px,
+            #006400 30px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 15px,
+            rgba(255, 215, 0, 0.3) 15px,
+            rgba(255, 215, 0, 0.3) 30px
+        );
 }
 
 .calendar-box.unlocked {
@@ -266,6 +320,10 @@ h1 {
 .bonus-box {
     background: linear-gradient(135deg, var(--silver) 0%, var(--light-silver) 100%);
     border: 3px solid var(--dark-gold);
+}
+
+.bonus-box.locked {
+    opacity: 0.9;
 }
 
 .bonus-box.unlocked {

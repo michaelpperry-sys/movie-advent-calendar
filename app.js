@@ -161,6 +161,9 @@ function createCalendarBox(dayIndex, boxDate, today) {
     // Apply state classes
     if (!isUnlocked) {
         box.classList.add('locked');
+        // Add random gift wrap pattern (1-4)
+        const patternNum = (dayIndex % 4) + 1;
+        box.classList.add(`wrap-pattern-${patternNum}`);
     } else if (isToday) {
         box.classList.add('today');
     } else if (isOpened) {
@@ -234,6 +237,9 @@ function createBonusBox(movie, index, weeksPassed) {
 
     if (!isUnlocked) {
         box.classList.add('locked');
+        // Add random gift wrap pattern (1-4)
+        const patternNum = (index % 4) + 1;
+        box.classList.add(`wrap-pattern-${patternNum}`);
     } else if (isOpened) {
         box.classList.add('opened');
     } else {
