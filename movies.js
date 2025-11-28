@@ -53,10 +53,10 @@ const MOVIE_DATABASE = {
 
     // Bonus movies that unlock weekly
     bonus: [
-        { title: "The Curse of the Cat People", year: 1944, poster: "https://image.tmdb.org/t/p/w500", tmdbId: 28436, unlockWeek: 1 },
-        { title: "Krampus", year: 2015, poster: "https://image.tmdb.org/t/p/w500", tmdbId: 287903, unlockWeek: 2 },
-        { title: "Let the Right One In", year: 2008, poster: "https://image.tmdb.org/t/p/w500", tmdbId: 13310, unlockWeek: 3 },
-        { title: "Night of The Demon", year: 1957, poster: "https://image.tmdb.org/t/p/w500", tmdbId: 25103, unlockWeek: 4 },
-        { title: "The Blackcoat's Daughter", year: 2015, poster: "https://image.tmdb.org/t/p/w500", tmdbId: 334536, unlockWeek: 5 }
+        { title: "The Curse of the Cat People", year: 1944, poster: "https://image.tmdb.org/t/p/w500", tmdbId: 28436, unlockWeek: 0 },
+        { title: "Krampus", year: 2015, poster: "https://image.tmdb.org/t/p/w500", tmdbId: 287903, unlockWeek: 1 },
+        { title: "Let the Right One In", year: 2008, poster: "https://image.tmdb.org/t/p/w500", tmdbId: 13310, unlockWeek: 2 },
+        { title: "Night of The Demon", year: 1957, poster: "https://image.tmdb.org/t/p/w500", tmdbId: 25103, unlockWeek: 3 },
+        { title: "The Blackcoat's Daughter", year: 2015, poster: "https://image.tmdb.org/t/p/w500", tmdbId: 334536, unlockWeek: 4 }
     ]
 };

@@ -257,7 +257,7 @@ function createBonusBox(movie, index, weeksPassed) {
 
     const weekLabel = document.createElement('div');
     weekLabel.className = 'box-date';
-    weekLabel.textContent = `Week ${movie.unlockWeek}`;
+    weekLabel.textContent = `Week ${movie.unlockWeek + 1}`;
 
     box.appendChild(icon);
     box.appendChild(title);
